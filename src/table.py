@@ -18,7 +18,6 @@ class Table:
             reader = csv.reader(file)
 
             for index, row in enumerate(reader):
-                print (index, row)
                 if index == 0:
                     self.hotel_names = row[1:]
                 elif index == 1:
@@ -35,25 +34,28 @@ class Table:
     
     def write_hotel_data(self, hotel_data) -> None:
 
-        print (hotel_data)
-
         with open(self.csv_file_name, 'w', newline='') as file:
 
             writer = csv.writer(file)
-            writer.writerow(self.hotel_names)
-            writer.writerow(self.hotel_urls)
 
-            #total_size = len(hotel_data[0])
+            # write the headers leaving the first column empty
+            writer.writerow([''] + self.hotel_names)
+            writer.writerow([''] + self.hotel_urls)
 
+            dates_len = len(hotel_data[0])
 
-                
+            for date_i in range(0, dates_len):
 
+                # insert the date in the first column
+                row_data = [hotel_data[0][date_i].date.date()]
 
+                # iterate over all the hotels and add them to the rows
+                for hotel in hotel_data:
+                    row_data.append(hotel[date_i].spots)
 
-
-
-
-
+                writer.writerow(row_data)
+        
+        logging.info("Done writing the new data.")
 
 if __name__ == "__main__":
 
