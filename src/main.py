@@ -2,35 +2,34 @@ from browser import Browser
 from hotel import HotelParser, HotelData, HotelInfo
 
 from datetime import datetime
+from table import Table
 
-hotels = [
-    HotelInfo("RefugioXYZ", "https://www.montourdumontblanc.com/fr/il4-refuge_i32365-auberge-du-truc.aspx"),
-    # "",
-    # "",
-]
-
-fully_parsed_data = {}
-
-def run_checks() -> None:
+def run_checks(hotels_csv: str) -> None:
+    
+    fully_parsed_data = []
 
     start_date = datetime(2024, 6, 1)
-    end_date   = datetime(2024, 10, 1)
+    end_date   = datetime(2024, 8, 1)
 
     if end_date > HotelParser.END_SEASON_DATE:
         raise Exception("End date has exceeded the season date - last possible date is " + HotelParser.END_SEASON_DATE.strftime("%d-%B-%Y"))
 
     browser = Browser()
 
+    table = Table(hotels_csv)
+    hotels = table.get_hotel_url_data()
+
     for hotel in hotels:
+        url_body, unique_id = browser.load_website(hotel.url)
+        hotel_parsed = HotelParser(url_body, unique_id, start_date, end_date)
+        fully_parsed_data.append(hotel_parsed.get_data())
 
-        url_body = browser.load_website(hotel.url)
-        hotel = HotelParser(url_body, start_date, end_date)
-
-        fully_parsed_data[hotel.name] = hotel.get_data()
-
+    table.write_hotel_data(fully_parsed_data)
     browser.close()
 
 
 if __name__ == "__main__":
 
-    run_checks()
+    HOTELS_TABLE = "../TMB_huts_copy.csv"
+
+    run_checks(HOTELS_TABLE)

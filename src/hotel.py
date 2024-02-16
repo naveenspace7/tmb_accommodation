@@ -24,24 +24,11 @@ class HotelParser:
 
     NEXT_WEEK_CLASS_NAME = "os_sem_suiv"
 
-    '''
-    time_date of the format: "13 FÉVR. MAR."
-    '''
-    @staticmethod
-    def _sanitize_time(time_date: str) -> None:
-
-        YEAR = 2024
-        french_to_months = {"FÉVR.": 2, "MARS": 3, "AVRIL": 4, "MAI" : 5, "JUIN": 6, "JUIL.": 7, "AOÛT": 8, "SEPT.": 9, "OCT.": 10}
-
-        time_date = time_date.split(' ')
-        month = french_to_months[time_date[1]]
-        date  = int(time_date[0])
-
-        return datetime(YEAR, month, date)
-
     def __init__(self, body: WebElement, unique_id: str, date_from: datetime, date_to: datetime):
 
         self.PLANNING_TABLE_ID = "planning" + unique_id[1:]
+
+        logging.info("Parsing " + unique_id)
 
         _start_time = time.time()
 
@@ -62,7 +49,6 @@ class HotelParser:
 
             # Start searching until we find the start date
             if not can_start(date_from, data_this_week) and not _start:
-                logging.warning("Skipping week...")
                 self._go_to_next_week()
                 continue
             else:
@@ -77,11 +63,32 @@ class HotelParser:
         
         _end_time = time.time()
 
-        logging.warning("Parsing took %d seconds", _end_time - _start_time)
+        logging.info("Parsing took %d seconds", _end_time - _start_time)
+    
+    '''
+    Get the data after parsing the hotels availability table
+    Args: None
+    Return: list of (date, available spots)
+    '''
+    def get_data(self) -> list:
+        return self.data
+
+    '''
+    time_date of the format: "13 FÉVR. MAR."
+    '''
+    @staticmethod
+    def _sanitize_time(time_date: str) -> None:
+
+        YEAR = 2024
+        french_to_months = {"FÉVR.": 2, "MARS": 3, "AVRIL": 4, "MAI" : 5, "JUIN": 6, "JUIL.": 7, "AOÛT": 8, "SEPT.": 9, "OCT.": 10}
+
+        time_date = time_date.split(' ')
+        month = french_to_months[time_date[1]]
+        date  = int(time_date[0])
+
+        return datetime(YEAR, month, date)
 
     def _get_data_for_this_week(self) -> list:
-
-        logging.warning("Fetching another week...")
 
         data = []
 
@@ -119,12 +126,3 @@ class HotelParser:
         # Click the "Next week" button
         next_week.click()
         time.sleep(HotelParser.WAIT_TIME)
-    
-    '''
-    Get the data after parsing the hotels availability table
-    Args: None
-    Return: list of (date, available spots)
-    '''
-    def get_data(self) -> list:
-        return self.data
-
