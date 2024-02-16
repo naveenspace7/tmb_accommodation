@@ -56,9 +56,3 @@ class Table:
                 writer.writerow(row_data)
         
         logging.info("Done writing the new data.")
-
-if __name__ == "__main__":
-
-    table = Table("../TMB_huts.csv")
-
-    print(table.get_hotel_url_data())

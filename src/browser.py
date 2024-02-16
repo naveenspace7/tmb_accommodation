@@ -55,34 +55,4 @@ class Browser:
     '''
     def _extract_unique_id(self, url: str) -> str:
         unique_id = re.findall("i[0-9]{5}", url)[0]
-        return unique_id
-
-if __name__ == "__main__":
-
-    URL = "https://www.montourdumontblanc.com/fr/il4-refuge_i32365-auberge-du-truc.aspx"
-
-    browser = Browser()
-    body = browser.load_website(URL)
-
-    for i in range(0, 2, 1):
-
-        data = body.find_element(By.ID, "planning32365")
-
-        next_week = data.find_element(By.CLASS_NAME, "os_sem_suiv")
-        print ("Check:", next_week.tag_name)
-        table_body = data.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div/div/div/div[1]/div/table/tbody/tr[2]")
-        days = table_body.find_elements(By.TAG_NAME, "td")
-
-        next_button = days[8]
-
-        days = days[1:8]
-        for day in days:
-            dates  = day.find_element(By.CLASS_NAME, "entete").text.split("\n")
-            dates = dates[1] + ' ' + dates[0]
-
-            places = day.find_element(By.CLASS_NAME, "places")
-            print (dates, places.text)
-    
-        next_week.click()
-        
-        browser.wait()        
+        return unique_id       
