@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 import time
+import re
 
 #from selenium.webdriver.support.ui import WebDriverWait
 #from selenium.webdriver.support import expected_conditions as EC
@@ -31,7 +32,13 @@ class Browser:
 
         # search for the body of the HTML page and return it
         body = self.driver.find_element(By.TAG_NAME, "body")
-        return body
+        unique_id = self._extract_unique_id(url)
+
+        return body, unique_id
+
+    def _extract_unique_id(self, url: str) -> str:
+        unique_id = re.findall("i[0-9]{5}", url)[0]
+        return unique_id
 
     def close(self) -> None:
         self.driver.quit()
